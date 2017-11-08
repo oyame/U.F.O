@@ -4,23 +4,12 @@ using UnityEngine;
 
 public class MainManager : MonoBehaviour {
 
-    private static MainManager instance = null;
-    public static MainManager Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                var obj = new GameObject("MainManager");
-                instance = obj.AddComponent<MainManager>();
-            }
-            return instance;
-        }
-    }
-
     //プレイヤー
     [SerializeField]
     Player m_player;
+
+    [SerializeField]
+    BrakebleObjManager m_brakebleManager;
 
     //吸い込まれる速度
     float m_vacuumSpeed = 0.1f;
@@ -37,8 +26,9 @@ public class MainManager : MonoBehaviour {
 	}
 
     //吸い込む速度を変える
-    void ChangeVacuumSpeed()
+    public void ChangeVacuumSpeed(float arg_num)
     {
-
+        m_player.ChangeSpeed(arg_num);
+        m_brakebleManager.ChangeSpeed(arg_num);
     }
 }

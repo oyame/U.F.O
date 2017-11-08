@@ -25,6 +25,7 @@ public class WeakCircle : MonoBehaviour {
             if (col.transform.tag == "AttackArea")
             {
                 m_bObj.StartCoroutine("Break");
+                FindObjectOfType<RushGage>().AddGage(0.1f);
             }
         }
 

@@ -22,6 +22,7 @@ public class Player : MonoBehaviour {
         Idle,
         Attack,
         Damage,
+        Special,
         Stop
 
     }
@@ -37,8 +38,19 @@ public class Player : MonoBehaviour {
     //攻撃範囲のコライダー
     GameObject m_attackArea;
 
+    Vector3 m_attackAreaPos, m_attackAreaScale;
+
     //攻撃時間
     float m_attackTime = 0.5f;
+
+    //必殺技展開時間
+    float m_specailAttackTime = 2;
+
+    //必殺技エフェクト
+    GameObject m_specialEffect;
+
+    //コライダー
+    CapsuleCollider2D m_myCollider;
 
     //経過時間格納庫
     float m_Time = 0; 
@@ -46,13 +58,25 @@ public class Player : MonoBehaviour {
     //アニメーターコントローラー
     Animator m_anim;
 
+    [SerializeField]
+    RushGage m_rushGage;
+
     // Use this for initialization
     void Start () {
         m_rigid = GetComponent<Rigidbody2D>();
         m_attackArea = transform.FindChild("AttackArea").gameObject;
+
+        m_attackAreaPos = m_attackArea.transform.position;
+        m_attackAreaScale = m_attackArea.transform.localScale;
+
         m_attackArea.SetActive(false);
 
+        m_specialEffect = transform.FindChild("EF_specailAttack").gameObject;
+        m_specialEffect.SetActive(false);
+
         m_anim = GetComponent<Animator>();
+
+        m_myCollider = GetComponent<CapsuleCollider2D>();
 
         state = State.Idle;
 	}
@@ -87,8 +111,16 @@ public class Player : MonoBehaviour {
                 {
                     //音
 
-                    state = State.Attack;
-                    
+                    if (m_rushGage.IsSpecialAttack())
+                    {
+                        state = State.Special;
+                        m_specialEffect.SetActive(true);
+                        m_myCollider.enabled = false;
+                    }
+                    else {
+                        state = State.Attack;
+                    }
+
                     m_anim.SetBool("Attack",true);
                     m_anim.SetBool("Idle", false);
                 }
@@ -106,6 +138,45 @@ public class Player : MonoBehaviour {
                 if(m_Time > m_attackTime)
                 {
                     state = State.Idle;
+                    
+                    m_attackArea.SetActive(false);
+                    m_anim.SetBool("Attack", false);
+                    m_anim.SetBool("Idle", true);
+
+                    m_Time = 0;
+                }
+
+                break;
+
+            case State.Special:
+
+                //左右移動二倍速
+                transform.Translate(new Vector2(Input.GetAxisRaw("Horizontal") * (m_horizontalSpeed * 2), 0));
+
+                m_Time += Time.deltaTime;
+
+                m_resuleSpeed -= 0.3f;
+
+                if (m_Time > 0.1f)
+                {
+                    m_attackArea.SetActive(true);
+                    m_attackArea.transform.position = transform.position;
+                    m_attackArea.transform.localScale = new Vector3(10,3,1);
+                }
+
+                if (m_Time > m_specailAttackTime)
+                {
+                    state = State.Idle;
+                    m_specialEffect.SetActive(false);
+
+                    //攻撃範囲を元に戻す
+                    m_attackArea.transform.position = m_attackAreaPos;
+                    m_attackArea.transform.localScale = m_attackAreaScale;
+
+                    m_myCollider.enabled = true;
+
+                    m_rushGage.AddGage(-1);
+
                     m_attackArea.SetActive(false);
                     m_anim.SetBool("Attack", false);
                     m_anim.SetBool("Idle", true);
@@ -171,6 +242,13 @@ public class Player : MonoBehaviour {
         m_anim.SetBool("Idle", false);
         m_anim.SetBool("Damage", true);
 
+        //必殺技中に被ダメしたら…
+        m_attackArea.transform.position = m_attackAreaPos;
+        m_attackArea.transform.localScale = m_attackAreaScale;
+        m_specialEffect.SetActive(false);
+
+        m_rushGage.AddGage(-0.01f);
+
         m_Time = m_respawnTime;
 
         m_respawnTime += 0.5f;
@@ -193,9 +271,14 @@ public class Player : MonoBehaviour {
 
         // プレイヤーの位置が画面内に収まるように制限をかける
         pos.x = Mathf.Clamp(pos.x, min.x + 0.5f, max.x - 0.5f);
-        pos.y = Mathf.Clamp(pos.y, min.y, max.y);
+        pos.y = Mathf.Clamp(pos.y, min.y + 2, max.y);
 
         // 制限をかけた値をプレイヤーの位置とする
         transform.position = pos;
+    }
+
+    public void ChangeSpeed(float arg_num)
+    {
+        m_playerVacuumSpeed += arg_num;
     }
 }

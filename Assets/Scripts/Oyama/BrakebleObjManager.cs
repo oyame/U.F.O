@@ -76,4 +76,9 @@ public class BrakebleObjManager : MonoBehaviour {
     }
 
 
+    public void ChangeSpeed(float arg_num)
+    {
+        m_objVacuumSpeed += arg_num;
+    }
+
 }
