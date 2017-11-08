@@ -7,9 +7,9 @@ public class LoadScene : MonoBehaviour {
 
     void Update ()
     {
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKey(KeyCode.Return))
         {
-            SceneManager.LoadScene("Main");
+            SceneManager.LoadScene("Oyama");
         }
 
     }
