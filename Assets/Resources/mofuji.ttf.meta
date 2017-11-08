@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: e8bcc66c46032ff46a72410d790b44b7
+timeCreated: 1510072142
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: mofuji
+  fontNames:
+  - mofuji
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
