@@ -23,7 +23,7 @@ public class Player : MonoBehaviour {
         Attack,
         Damage,
         Special,
-        Stop
+        Dead
 
     }
 
@@ -45,7 +45,7 @@ public class Player : MonoBehaviour {
 
     //必殺技展開時間
     float m_specailAttackTime = 2;
-
+    
     //必殺技エフェクト
     GameObject m_specialEffect;
 
@@ -60,6 +60,11 @@ public class Player : MonoBehaviour {
 
     [SerializeField]
     RushGage m_rushGage;
+
+    float DeadLine;
+
+    [HideInInspector]
+    public bool m_endFlag;
 
     // Use this for initialization
     void Start () {
@@ -77,6 +82,10 @@ public class Player : MonoBehaviour {
         m_anim = GetComponent<Animator>();
 
         m_myCollider = GetComponent<CapsuleCollider2D>();
+
+        DeadLine = GameObject.FindGameObjectWithTag("UFO").transform.position.y;
+
+        m_endFlag = false;
 
         state = State.Idle;
 	}
@@ -118,6 +127,7 @@ public class Player : MonoBehaviour {
                         m_myCollider.enabled = false;
                     }
                     else {
+                        m_resuleSpeed += m_HunbariNum * 3;
                         state = State.Attack;
                     }
 
@@ -155,6 +165,8 @@ public class Player : MonoBehaviour {
 
                 m_Time += Time.deltaTime;
 
+                m_rushGage.AddGage(-(1 / m_specailAttackTime)*Time.deltaTime);
+
                 m_resuleSpeed -= 0.3f;
 
                 if (m_Time > 0.1f)
@@ -175,7 +187,7 @@ public class Player : MonoBehaviour {
 
                     m_myCollider.enabled = true;
 
-                    m_rushGage.AddGage(-1);
+                    m_rushGage.SetGage(0);
 
                     m_attackArea.SetActive(false);
                     m_anim.SetBool("Attack", false);
@@ -212,6 +224,47 @@ public class Player : MonoBehaviour {
                 }
 
                 break;
+
+            case State.Dead:
+
+                m_Time += Time.deltaTime;
+
+                if(m_Time > 1f)
+                {
+                    Debug.Log("in");
+                    AppManager.Instance.m_fade.StartFade(new FadeOut(), Color.black, 1.0f);
+
+                    Invoke("GameEnd",1);
+
+                    //糞みたいな再発防止策
+                    m_Time = -100;
+                }
+
+                
+
+                break;
+        }
+
+        if(transform.position.y > DeadLine && state != State.Dead)
+        {
+            
+            //ゲームオーバー
+            m_anim.SetBool("Idle", false);
+            m_anim.SetBool("Attack", false);
+            m_anim.SetBool("Special", false);
+            m_anim.SetBool("Damage", false);
+            m_specialEffect.SetActive(false);
+            m_attackArea.SetActive(false);
+
+            m_myCollider.enabled = false;
+            
+            m_anim.SetTrigger("Dead");
+
+            //リザルト遷移用
+            m_Time = 0;
+
+
+            state = State.Dead;
         }
 
         Vacuum();
@@ -220,17 +273,13 @@ public class Player : MonoBehaviour {
 
     }
 
-    //吸い込み関数　stateがStopの時以外に吸い込む
+    //吸い込み関数
     void Vacuum()
     {
         
         m_resuleSpeed += m_playerVacuumSpeed;
 
-        if (state != State.Stop)
-        {
-            
-            m_rigid.MovePosition((Vector2)transform.position + new Vector2(0, m_resuleSpeed));
-        }
+        transform.localPosition = ((Vector2)transform.position + new Vector2(0, m_resuleSpeed));
 
         m_resuleSpeed = 0;
     }
@@ -246,6 +295,8 @@ public class Player : MonoBehaviour {
         m_attackArea.transform.position = m_attackAreaPos;
         m_attackArea.transform.localScale = m_attackAreaScale;
         m_specialEffect.SetActive(false);
+
+        m_attackArea.SetActive(false);
 
         m_rushGage.AddGage(-0.01f);
 
@@ -277,8 +328,23 @@ public class Player : MonoBehaviour {
         transform.position = pos;
     }
 
+    //必殺技中かどうかを取得
+    public bool IsSpecailNow()
+    {
+        if (state == State.Special) return true;
+        else return false;
+    }
+
+    //すばやい
     public void ChangeSpeed(float arg_num)
     {
         m_playerVacuumSpeed += arg_num;
     }
+
+    //終わる
+    void GameEnd()
+    {
+        m_endFlag = true;
+    }
+
 }

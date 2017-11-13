@@ -27,7 +27,9 @@ public class BrakebleObj : MonoBehaviour {
             if (transform.localScale.x < 0)
             {
                 FindObjectOfType<MainManager>().ChangeVacuumSpeed(0.001f);
-                
+                UFO.transform.FindChild("SP_UFO(仮)").GetComponent<Huwahuwa>().num += 3;
+                UFO.transform.FindChild("EF_Catle").GetComponent<ParticleSystem>().playbackSpeed += 0.2f;
+
                 Destroy(gameObject);
             }
 
