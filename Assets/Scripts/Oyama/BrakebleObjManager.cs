@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class BrakebleObjManager : MonoBehaviour {
 
-    //現在出しているオブジェのリスト
-    List<BrakebleObj> m_objList = new List<BrakebleObj>();
-
     //オブジェの吸い込まれる速さ
     float m_objVacuumSpeed = 0.03f;
 
@@ -26,18 +23,6 @@ public class BrakebleObjManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		
-        if(m_objList.Count != 0)
-        {
-
-            foreach(var obj in m_objList)
-            {
-                if (obj.m_activeFlag)
-                {
-                    obj.transform.position += new Vector3(0, m_objVacuumSpeed,0);
-                }
-            }
-
-        }
 
 	}
 
@@ -55,18 +40,21 @@ public class BrakebleObjManager : MonoBehaviour {
             {
                 case 0:
                     GameObject obj = Instantiate(m_small, new Vector3(Random.Range(-4.0f,4.0f), -7, 0), Quaternion.identity);
-                    m_objList.Add(obj.GetComponent<BrakebleObj>());
+                    obj.GetComponent<BrakebleObj>().SetSpeed(m_objVacuumSpeed);
+                    obj.transform.parent = transform;
                     break;
 
                 case 1:
                     GameObject obj2 = Instantiate(m_middle, new Vector3(Random.Range(-4.0f, 4.0f), -7, 0), Quaternion.identity);
-                    m_objList.Add(obj2.GetComponent<BrakebleObj>());
+                    obj2.GetComponent<BrakebleObj>().SetSpeed(m_objVacuumSpeed);
+                    obj2.transform.parent = transform;
                     break;
 
 
                 case 2:
                     GameObject obj3 = Instantiate(m_big, new Vector3(Random.Range(-4.0f, 4.0f), -7, 0), Quaternion.identity);
-                    m_objList.Add(obj3.GetComponent<BrakebleObj>());
+                    obj3.GetComponent<BrakebleObj>().SetSpeed(m_objVacuumSpeed);
+                    obj3.transform.parent = transform;
                     break;
             }
             
@@ -79,6 +67,11 @@ public class BrakebleObjManager : MonoBehaviour {
     public void ChangeSpeed(float arg_num)
     {
         m_objVacuumSpeed += arg_num;
+
+        foreach(Transform child in transform)
+        {
+            child.GetComponent<BrakebleObj>().SetSpeed(m_objVacuumSpeed);
+        }
     }
 
 }

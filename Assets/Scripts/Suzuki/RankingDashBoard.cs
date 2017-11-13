@@ -4,12 +4,14 @@ using UnityEngine.UI;
 
 public class RankingDashBoard : MonoBehaviour
 {
-    private string RankingPrefKey = "50,30,10"; // ローカルに文字列でランキングを保存
+    private string RankingPrefKey = "1500,1200,1000"; // ローカルに文字列でランキングを保存
     private int RankingNum = 3; // 保持するランキングの順位
     public float[] ranking = new float[3]; // ランキングの値をスコアと参照するための配列
     public Text first_rank; // GUIテキストの一位の欄
     public Text second_rank; // GUIテキストの二位の欄
     public Text third_rank; // GUIテキストの三位の欄
+
+    public Text now_rank; // 今回の遊びで取得したスコア
 
     // ランキングをPlayerPrefsから取得してrankingに格納
     public void getRanking()
@@ -32,6 +34,8 @@ public class RankingDashBoard : MonoBehaviour
     // 新たにスコアを保持する
     public void saveRanking(float new_score)
     {
+        now_rank.text = new_score.ToString();
+
         if (!ranking.Equals(string.Empty))
         {
             float _tmp = 0.0f;
@@ -65,7 +69,7 @@ public class RankingDashBoard : MonoBehaviour
 
     public void debugmodeRanking()
     {
-        PlayerPrefs.SetString(RankingPrefKey, "50,30,10");
+        PlayerPrefs.SetString(RankingPrefKey, "1500,1200,1000");
     }
 
     public void screenRanking()
@@ -73,7 +77,7 @@ public class RankingDashBoard : MonoBehaviour
         for(int j = 0; j < ranking.Length; j++)
         {
             string ranking_string = "";
-            ranking_string = ranking_string + (j + 1) + "位" + ranking[j];
+            ranking_string = ranking[j].ToString();
             if (j == 0) first_rank.text = ranking_string.ToString();
             if (j == 1) second_rank.text = ranking_string.ToString();
             if (j == 2) third_rank.text = ranking_string.ToString();

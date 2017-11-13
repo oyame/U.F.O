@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Player : MonoBehaviour {
 
+    //軽量化を図るため、Transformをキャッシュ
+    Transform m_trans;
+
     //初期の吸い込まれ具合
     float m_playerVacuumSpeed = 0.01f;
 
@@ -38,6 +41,9 @@ public class Player : MonoBehaviour {
     //攻撃範囲のコライダー
     GameObject m_attackArea;
 
+    //キャッシュ
+    Transform m_attackAreaTransform;
+
     Vector3 m_attackAreaPos, m_attackAreaScale;
 
     //攻撃時間
@@ -66,17 +72,24 @@ public class Player : MonoBehaviour {
     [HideInInspector]
     public bool m_endFlag;
 
+    MainManager m_manager;
+
     // Use this for initialization
     void Start () {
-        m_rigid = GetComponent<Rigidbody2D>();
-        m_attackArea = transform.FindChild("AttackArea").gameObject;
 
-        m_attackAreaPos = m_attackArea.transform.position;
-        m_attackAreaScale = m_attackArea.transform.localScale;
+        m_trans = transform;
+
+        m_rigid = GetComponent<Rigidbody2D>();
+        m_attackArea = m_trans.FindChild("AttackArea").gameObject;
+
+        m_attackAreaTransform = m_attackArea.transform;
+
+        m_attackAreaPos = m_attackAreaTransform.position;
+        m_attackAreaScale = m_attackAreaTransform.localScale;
 
         m_attackArea.SetActive(false);
 
-        m_specialEffect = transform.FindChild("EF_specailAttack").gameObject;
+        m_specialEffect = m_trans.FindChild("EF_specailAttack").gameObject;
         m_specialEffect.SetActive(false);
 
         m_anim = GetComponent<Animator>();
@@ -87,33 +100,29 @@ public class Player : MonoBehaviour {
 
         m_endFlag = false;
 
+        m_manager = FindObjectOfType<MainManager>();
+
         state = State.Idle;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
-        m_attackArea.transform.position = transform.position + new Vector3(0,-0.8f,0);
+        m_attackAreaTransform.position = m_trans.position + new Vector3(0,-0.8f,0);
 
         switch (state)
         {
 
             case State.Idle:
 
-                transform.Translate(new Vector2(Input.GetAxisRaw("Horizontal") * m_horizontalSpeed, 0));
+                m_trans.Translate(new Vector2(Input.GetAxisRaw("Horizontal") * m_horizontalSpeed, 0));
 
                 //zx連打で下降
-                if (Input.GetKeyDown(KeyCode.Z))
+                if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.X))
                 {
                     m_resuleSpeed += m_HunbariNum;
+                    m_manager.AddScore(1);
                 }
-
-                if (Input.GetKeyDown(KeyCode.X))
-                {
-                    m_resuleSpeed += m_HunbariNum;
-                }
-
-                
 
                 //エンターでパンチ
                 if (Input.GetKeyDown(KeyCode.Return))
@@ -138,7 +147,7 @@ public class Player : MonoBehaviour {
 
             case State.Attack:
 
-                transform.Translate(new Vector2(Input.GetAxisRaw("Horizontal") * m_horizontalSpeed, 0));
+                m_trans.Translate(new Vector2(Input.GetAxisRaw("Horizontal") * m_horizontalSpeed, 0));
 
                 m_Time += Time.deltaTime;
 
@@ -161,7 +170,7 @@ public class Player : MonoBehaviour {
             case State.Special:
 
                 //左右移動二倍速
-                transform.Translate(new Vector2(Input.GetAxisRaw("Horizontal") * (m_horizontalSpeed * 2), 0));
+                m_trans.Translate(new Vector2(Input.GetAxisRaw("Horizontal") * (m_horizontalSpeed * 2), 0));
 
                 m_Time += Time.deltaTime;
 
@@ -172,8 +181,8 @@ public class Player : MonoBehaviour {
                 if (m_Time > 0.1f)
                 {
                     m_attackArea.SetActive(true);
-                    m_attackArea.transform.position = transform.position;
-                    m_attackArea.transform.localScale = new Vector3(10,3,1);
+                    m_attackAreaTransform.position = m_trans.position;
+                    m_attackAreaTransform.localScale = new Vector3(10,3,1);
                 }
 
                 if (m_Time > m_specailAttackTime)
@@ -182,8 +191,8 @@ public class Player : MonoBehaviour {
                     m_specialEffect.SetActive(false);
 
                     //攻撃範囲を元に戻す
-                    m_attackArea.transform.position = m_attackAreaPos;
-                    m_attackArea.transform.localScale = m_attackAreaScale;
+                    m_attackAreaTransform.position = m_attackAreaPos;
+                    m_attackAreaTransform.localScale = m_attackAreaScale;
 
                     m_myCollider.enabled = true;
 
@@ -200,12 +209,7 @@ public class Player : MonoBehaviour {
 
             case State.Damage:
                 //zx連打で復帰を早める
-                if (Input.GetKeyDown(KeyCode.Z))
-                {
-                    m_Time -= 0.1f;
-                }
-
-                if (Input.GetKeyDown(KeyCode.X))
+                if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.X))
                 {
                     m_Time -= 0.1f;
                 }
@@ -245,7 +249,7 @@ public class Player : MonoBehaviour {
                 break;
         }
 
-        if(transform.position.y > DeadLine && state != State.Dead)
+        if(m_trans.position.y > DeadLine && state != State.Dead)
         {
             
             //ゲームオーバー
@@ -279,7 +283,7 @@ public class Player : MonoBehaviour {
         
         m_resuleSpeed += m_playerVacuumSpeed;
 
-        transform.localPosition = ((Vector2)transform.position + new Vector2(0, m_resuleSpeed));
+        m_rigid.MovePosition(((Vector2)m_trans.position + new Vector2(0, m_resuleSpeed)));
 
         m_resuleSpeed = 0;
     }
@@ -292,8 +296,8 @@ public class Player : MonoBehaviour {
         m_anim.SetBool("Damage", true);
 
         //必殺技中に被ダメしたら…
-        m_attackArea.transform.position = m_attackAreaPos;
-        m_attackArea.transform.localScale = m_attackAreaScale;
+        m_attackAreaTransform.position = m_attackAreaPos;
+        m_attackAreaTransform.localScale = m_attackAreaScale;
         m_specialEffect.SetActive(false);
 
         m_attackArea.SetActive(false);
@@ -318,14 +322,14 @@ public class Player : MonoBehaviour {
         Vector2 max = Camera.main.ViewportToWorldPoint(new Vector2(1, 1));
 
         // プレイヤーの座標を取得
-        Vector2 pos = transform.position;
+        Vector2 pos = m_trans.position;
 
         // プレイヤーの位置が画面内に収まるように制限をかける
         pos.x = Mathf.Clamp(pos.x, min.x + 0.5f, max.x - 0.5f);
         pos.y = Mathf.Clamp(pos.y, min.y + 2, max.y);
 
         // 制限をかけた値をプレイヤーの位置とする
-        transform.position = pos;
+        m_trans.position = pos;
     }
 
     //必殺技中かどうかを取得

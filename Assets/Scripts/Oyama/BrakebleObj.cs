@@ -10,26 +10,39 @@ public class BrakebleObj : MonoBehaviour {
 
     public bool m_activeFlag = true;
 
+    public float m_myPoint = 0;
+
+    //Managerから値をセットされる
+    float m_speed = 0;
+
+    //キャッシュ
+    Transform m_trans;
+
 	// Use this for initialization
 	void Start () {
         UFO = GameObject.FindGameObjectWithTag("UFO");
         m_circle = transform.FindChild("WeakCircle").gameObject;
-	}
+        m_trans = transform;
+
+    }
 
 	// Update is called once per frame
 	void Update () {
 
-        if (transform.position.y > UFO.transform.position.y)
+        if(m_activeFlag)
+            m_trans.position += new Vector3(0, m_speed, 0);
+
+        if (m_trans.position.y > UFO.transform.position.y)
         {
             m_activeFlag = false;
-            transform.localScale -= new Vector3(0.1f, 0.1f, 0);
+            m_trans.localScale -= new Vector3(0.1f, 0.1f, 0);
 
-            if (transform.localScale.x < 0)
+            if (m_trans.localScale.x < 0)
             {
-                FindObjectOfType<MainManager>().ChangeVacuumSpeed(0.001f);
-                UFO.transform.FindChild("SP_UFO(仮)").GetComponent<Huwahuwa>().num += 3;
+                FindObjectOfType<MainManager>().ChangeVacuumSpeed(0.002f);
+                UFO.transform.FindChild("SP_UFO(仮)").GetComponent<Huwahuwa>().num += 2;
                 UFO.transform.FindChild("EF_Catle").GetComponent<ParticleSystem>().playbackSpeed += 0.2f;
-
+                
                 Destroy(gameObject);
             }
 
@@ -57,8 +70,8 @@ public class BrakebleObj : MonoBehaviour {
         m_circle.SetActive(false);
         m_activeFlag = false;
 
-        GameObject left = transform.FindChild("Left").gameObject;
-        GameObject right = transform.FindChild("Right").gameObject;
+        GameObject left = m_trans.FindChild("Left").gameObject;
+        GameObject right = m_trans.FindChild("Right").gameObject;
 
         float addY = 0;
 
@@ -73,6 +86,13 @@ public class BrakebleObj : MonoBehaviour {
             
             
         }
+        
         Destroy(this.gameObject);
+
+    }
+
+    public void SetSpeed(float arg_speed)
+    {
+        m_speed = arg_speed;
     }
 }

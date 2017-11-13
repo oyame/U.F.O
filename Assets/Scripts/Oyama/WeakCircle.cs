@@ -10,16 +10,20 @@ public class WeakCircle : MonoBehaviour {
     RushGage rush;
     Player player;
 
+    MainManager manager;
+
 	// Use this for initialization
 	void Start () {
 
         m_myAnim = GetComponent<Animator>();
         m_myAnim.speed = 0;
 
-        m_bObj = transform.root.GetComponent<BrakebleObj>();
+        m_bObj = transform.parent.GetComponent<BrakebleObj>();
 
         player = FindObjectOfType<Player>();
         rush = FindObjectOfType<RushGage>();
+
+        manager = FindObjectOfType<MainManager>();
 	}
 
     void OnTriggerEnter2D(Collider2D col)
@@ -33,6 +37,9 @@ public class WeakCircle : MonoBehaviour {
 
                 GameObject eff = Instantiate(Resources.Load<GameObject>("Prefabs/Effect/EF_Broken"), transform.position, Quaternion.identity);
                 Destroy(eff, 1);
+
+                //スコア加算
+                manager.AddScore(m_bObj.m_myPoint);
 
                 if(!player.IsSpecailNow())
                 rush.AddGage(0.1f);

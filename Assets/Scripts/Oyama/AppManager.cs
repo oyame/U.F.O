@@ -14,6 +14,8 @@ public class AppManager : MonoBehaviour
     #region Singleton実装
     private static AppManager m_instance;
 
+    float score = 0;
+
     public static AppManager Instance
     {
         get
@@ -48,4 +50,13 @@ public class AppManager : MonoBehaviour
         DontDestroyOnLoad(m_fade.transform.parent.gameObject);
     }
 
+    public void SetScore(float arg_score)
+    {
+        score = arg_score;
+    }
+
+    public float GetScore()
+    {
+        return score;
+    }
 }
