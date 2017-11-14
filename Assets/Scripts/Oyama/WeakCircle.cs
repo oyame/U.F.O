@@ -38,6 +38,7 @@ public class WeakCircle : MonoBehaviour {
                 GameObject eff = Instantiate(Resources.Load<GameObject>("Prefabs/Effect/EF_Broken"), transform.position, Quaternion.identity);
                 Destroy(eff, 1);
 
+
                 //スコア加算
                 manager.AddScore(m_bObj.m_myPoint);
 
