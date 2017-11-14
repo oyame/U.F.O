@@ -67,6 +67,16 @@ public class BrakebleObj : MonoBehaviour {
 
     IEnumerator Break()
     {
+
+        if (transform.GetComponent<Huwahuwa>())
+        {
+            transform.GetComponent<Huwahuwa>().enabled = false;
+        }
+        if (transform.GetComponent<Rotate>())
+        {
+            transform.GetComponent<Rotate>().enabled = false;
+        }
+
         m_circle.SetActive(false);
         m_activeFlag = false;
 

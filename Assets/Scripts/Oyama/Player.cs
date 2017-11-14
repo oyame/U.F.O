@@ -176,7 +176,7 @@ public class Player : MonoBehaviour {
 
                 m_rushGage.AddGage(-(1 / m_specailAttackTime)*Time.deltaTime);
 
-                m_resuleSpeed -= 0.3f;
+                m_resuleSpeed -= 0.1f;
 
                 if (m_Time > 0.1f)
                 {
@@ -208,6 +208,7 @@ public class Player : MonoBehaviour {
                 break;
 
             case State.Damage:
+                
                 //zx連打で復帰を早める
                 if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.X))
                 {
