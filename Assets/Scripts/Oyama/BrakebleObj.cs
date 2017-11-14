@@ -42,7 +42,9 @@ public class BrakebleObj : MonoBehaviour {
                 FindObjectOfType<MainManager>().ChangeVacuumSpeed(0.002f);
                 UFO.transform.FindChild("SP_UFO(仮)").GetComponent<Huwahuwa>().num += 2;
                 UFO.transform.FindChild("EF_Catle").GetComponent<ParticleSystem>().playbackSpeed += 0.2f;
-                
+
+                AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Sounds/SE/SE_speedUp"), Camera.main.transform.position);
+
                 Destroy(gameObject);
             }
 
@@ -59,6 +61,7 @@ public class BrakebleObj : MonoBehaviour {
             if (col.transform.tag == "Player")
             {
                 col.GetComponent<Player>().Damage();
+                AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Sounds/SE/SE_touki_break"), Camera.main.transform.position);
                 StartCoroutine("Break");
             }
         }
@@ -67,6 +70,8 @@ public class BrakebleObj : MonoBehaviour {
 
     IEnumerator Break()
     {
+
+        
 
         if (transform.GetComponent<Huwahuwa>())
         {

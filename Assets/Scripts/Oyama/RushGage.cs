@@ -31,6 +31,8 @@ public class RushGage : MonoBehaviour {
             m_image.color = new Color(1, 1, 1, 1);
             m_anim.speed = 0;
 
+            AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Sounds/SE/SE_chargeOk"), Camera.main.transform.position);
+
             m_maxEffect.SetActive(true);
 
             m_flag = true;

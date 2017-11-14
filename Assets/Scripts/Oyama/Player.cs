@@ -120,6 +120,8 @@ public class Player : MonoBehaviour {
                 //zx連打で下降
                 if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.X))
                 {
+                    AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Sounds/SE/SE_mogaku"), Camera.main.transform.position);
+
                     m_resuleSpeed += m_HunbariNum;
                     m_manager.AddScore(1);
                 }
@@ -131,11 +133,16 @@ public class Player : MonoBehaviour {
 
                     if (m_rushGage.IsSpecialAttack())
                     {
+                        AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Sounds/SE/SE_final_attack"), Camera.main.transform.position);
+
                         state = State.Special;
                         m_specialEffect.SetActive(true);
                         m_myCollider.enabled = false;
                     }
                     else {
+
+                        AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Sounds/SE/SE_middle_punch1"), Camera.main.transform.position);
+
                         m_resuleSpeed += m_HunbariNum * 3;
                         state = State.Attack;
                     }
@@ -212,6 +219,7 @@ public class Player : MonoBehaviour {
                 //zx連打で復帰を早める
                 if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.X))
                 {
+                    AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Sounds/SE/SE_mogaku"), Camera.main.transform.position);
                     m_Time -= 0.1f;
                 }
 
@@ -262,7 +270,9 @@ public class Player : MonoBehaviour {
             m_attackArea.SetActive(false);
 
             m_myCollider.enabled = false;
-            
+
+            AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Sounds/SE/SE_Dead"), Camera.main.transform.position);
+
             m_anim.SetTrigger("Dead");
 
             //リザルト遷移用
@@ -308,6 +318,8 @@ public class Player : MonoBehaviour {
         m_Time = m_respawnTime;
 
         m_respawnTime += 0.5f;
+
+        AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Sounds/SE/SE_damage"), Camera.main.transform.position);
 
         state = State.Damage;
 

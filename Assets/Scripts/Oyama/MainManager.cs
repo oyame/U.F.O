@@ -78,6 +78,8 @@ public class MainManager : MonoBehaviour {
     IEnumerator StartObj()
     {
 
+        
+
         GameObject Go = m_startObj.transform.FindChild("SP_PlayerFace_Go").gameObject;
 
         int i = 0;
@@ -85,6 +87,9 @@ public class MainManager : MonoBehaviour {
         while (true) {
 
             yield return new WaitForSeconds(1);
+
+            //最初だけ開始音を鳴らす
+            if(i == 0) AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Sounds/SE/SE_signal_01"), Camera.main.transform.position);
 
             if (i == 3) break;
 
@@ -105,6 +110,8 @@ public class MainManager : MonoBehaviour {
         m_brakebleManager.enabled = true;
         m_rushGage.enabled = true;
         m_BGAnim.enabled = true;
+
+        GetComponent<AudioSource>().Play();
 
         m_catleEfect.GetComponent<ParticleSystem>().Play();
 

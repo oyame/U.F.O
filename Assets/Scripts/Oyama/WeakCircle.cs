@@ -33,6 +33,8 @@ public class WeakCircle : MonoBehaviour {
         {
             if (col.transform.tag == "AttackArea")
             {
+                AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Sounds/SE/SE_objDestroy"), Camera.main.transform.position);
+
                 m_bObj.StartCoroutine("Break");
 
                 GameObject eff = Instantiate(Resources.Load<GameObject>("Prefabs/Effect/EF_Broken"), transform.position, Quaternion.identity);

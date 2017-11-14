@@ -9,12 +9,12 @@ public class BrakebleObjManager : MonoBehaviour {
 
     //オブジェ生成のインターバル
     float m_createTime = 2;
-
+    
     [SerializeField]
-    GameObject m_small, m_middle, m_big;
+    GameObject[] m_objs;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
 
         StartCoroutine("CreateObj");
 
@@ -34,30 +34,12 @@ public class BrakebleObjManager : MonoBehaviour {
 
             yield return new WaitForSeconds(m_createTime);
 
-            int rand = Random.Range(0, 3);
+            int rand = Random.Range(0, m_objs.Length);
 
-            switch (rand)
-            {
-                case 0:
-                    GameObject obj = Instantiate(m_small, new Vector3(Random.Range(-4.0f,4.0f), -7, 0), Quaternion.identity);
-                    obj.GetComponent<BrakebleObj>().SetSpeed(m_objVacuumSpeed);
-                    obj.transform.parent = transform;
-                    break;
+            GameObject obj = Instantiate(m_objs[rand], new Vector3(Random.Range(-4.0f, 4.0f), -7, 0), Quaternion.identity);
+            obj.GetComponent<BrakebleObj>().SetSpeed(m_objVacuumSpeed);
+            obj.transform.parent = transform;
 
-                case 1:
-                    GameObject obj2 = Instantiate(m_middle, new Vector3(Random.Range(-4.0f, 4.0f), -7, 0), Quaternion.identity);
-                    obj2.GetComponent<BrakebleObj>().SetSpeed(m_objVacuumSpeed);
-                    obj2.transform.parent = transform;
-                    break;
-
-
-                case 2:
-                    GameObject obj3 = Instantiate(m_big, new Vector3(Random.Range(-4.0f, 4.0f), -7, 0), Quaternion.identity);
-                    obj3.GetComponent<BrakebleObj>().SetSpeed(m_objVacuumSpeed);
-                    obj3.transform.parent = transform;
-                    break;
-            }
-            
 
         }
 
